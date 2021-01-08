@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" content="Interaktivna razlaga faznih prehodov.">
+    <title>Trdno, tekoče, plinasto</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https.//cdn.jsdelivr.net">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+</head>
+
+<body>
+    <div class="h-100 d-flex flex-column">
+        <div class="head">
+            <div class="headwrapper">
+                <div class="header">
+                    <a href="/sim/phase-transitions/">
+                        <h1>Trdno, tekoče, plinasto</h1>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="contentwrapper flex-grow-1 overflow-auto">
+            <div class="container content">
+                <div class="row linknav" style="padding-bottom: 20px;">
+                    <a href="../lennard-jones-1/"><span class="material-icons"
+                            style="padding-right: 10px;">keyboard_backspace</span>Nazaj</a>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="row">
+                            <canvas id="myCanvas" style="padding: 0;"></canvas>
+                        </div>
+                        <div class="row" style="padding: 25px;">
+                            <button type="button" class="btn btn-danger" onclick="resetWorld();">Ponastavi</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-7 maintext px-sm-5">
+                        <p><div class="inspan">
+                            <span class="material-icons rspace">play_arrow</span>Kaj pa se zgodi, če atoma trčita z veliko hitrostjo?
+                        </div></p>
+                        <div id="zlepek">
+                            <p>Poskusi ponovno a tokrat z še večjo hitrostjo.</p>
+                        </div>
+                        <div id="prog1">
+                            <p>Atoma se pri trku ne zlepita!</p>
+                            <p>Privlak med atomoma ju skuša zadržati skupaj, a je hitrost prevelika, da bi ostala zlepljena.</p>
+                            <p><div class="inspan">
+                                <span class="material-icons rspace">play_arrow</span>Še nekajkrat poskusi ustreliti en atom v drugega, tako da se zlepita in tako da se ne.
+                                Po potrebi ponastavi simulacijo.
+                                <br><br>
+                                Preveri kako je hitrost, s katero lahko en atom ubeži privlaku drugega, odvisna od razdalje med njima. Ali težje ubeži, če je bližje?
+                                Ko najdeš odgovor, klikni Nadaljuj.
+                            </div></p>
+                        </div>
+                        <div class="linknav" id="nadaljuj">
+                            <hr>
+                            <a href="../lennard-jones-3/"><b>Nadaljuj</b><span class="material-icons"
+                                    style="padding-left: 10px;">keyboard_tab</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footerwrapper">
+            <div class="footer">
+                Rok Kuk, 2021, GNU GPLv3
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById("nadaljuj").style.display = "none";
+        document.getElementById("prog1").style.display = "none";
+        document.getElementById("zlepek").style.display = "none";
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matter-js@0.15.0/build/matter.min.js"
+        integrity="sha256-SvLWUhd2XsoN8B51fSSgZCO6J0X4uG+FGQZ41TStzMU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matter-attractors@0.1.6/build/matter-attractors.min.js"
+        integrity="sha256-XVi6kQJNjdbjQyRNAIuyfR2VB/jViITCG2pt5HvW2NQ=" crossorigin="anonymous"></script>
+    <script>
+        Matter.use('matter-attractors'); // mora biti za matter.js, matter-attractors.js in pred main.js
+    </script>
+    <script src="../js/main.js"></script>
+    <!-- Simulation implementation -->
+    <script>
+        let bb = document.getElementById('myCanvas').getBoundingClientRect();
+        let width = bb.right - bb.left;
+        let height = width;
+        let instance = createSim("myCanvas", width, height);
+
+        let radij = 15;
+        let sigma2 = sigmaf(radij);
+        let circ1;
+        let circ2;
+        let step1done = false;
+        let step2done = false;
+        let trk = false;
+        let lastrs = [];
+
+        function setup() {
+            let options = {
+                inertia: Infinity,
+                friction: 0,
+                frictionAir: 0,
+                frictionStatic: 0,
+                restitution: 1,
+                render: {
+                    fillStyle: "#ffcc66"
+                }
+            };
+            options.plugin = {};
+            options.plugin.attractors = [
+                function (bodyA, bodyB) {
+                    let dx = bodyA.position.x - bodyB.position.x;
+                    let dy = bodyA.position.y - bodyB.position.y;
+                    let dist2 = Math.pow(dx, 2) + Math.pow(dy, 2);
+                    let term = sigma2 / dist2;
+                    let velikostd2 = Math.pow(term, 3) / dist2 * (1 - 2 * Math.pow(term, 3));
+                    let force = {
+                        x: velikostd2 * dx,
+                        y: velikostd2 * dy
+                    };
+                    Body.applyForce(bodyA, bodyA.position, Vector.neg(force));
+                    Body.applyForce(bodyB, bodyB.position, force);
+                }
+            ];
+            circ1 = Bodies.circle(50, height - 50, radij, options);
+            circ2 = Bodies.circle(width - 50, 50, radij, options);
+            World.add(instance.world, [circ1, circ2]);
+
+            Events.on(instance.engine, "collisionEnd", function(event) {
+            if (!step1done) {
+                let pair = event.pairs[0]
+                if ((pair.bodyA === circ1 || pair.bodA === circ2) && (pair.bodyA === circ1 || pair.bodyB === circ2)) {
+                    trk = true;
+                }
+            }
+        });
+        }
+
+        function resetWorld() {
+            World.clear(instance.world, true);
+            step1done = false;
+            step2done = false;
+            trk = false;
+            lastrs = [];
+            setup();
+        }
+
+        setup();
+
+        // start simulation
+
+        let runner = Runner.create();
+        Runner.run(runner, instance.engine);
+        Render.run(instance.render);
+
+        // while running
+        const intervalr = setInterval(function () {
+            let raz = Math.sqrt(Math.pow(circ1.position.x - circ2.position.x, 2) + Math.pow(circ1.position.y - circ2.position.y, 2));
+            lastrs.push(raz);
+
+            if (lastrs.length > 20) {
+                lastrs.shift();
+            }
+
+            let avgr = (lastrs.reduce((a, b) => a + b, 0) / lastrs.length);
+
+            if ((avgr > 100) && step1done && trk) {
+                step2done = true;
+                $("#prog1").fadeIn(1000, "swing");
+                $("#nadaljuj").fadeIn(1000, "swing");
+                clearInterval(intervalr);
+            }
+
+            // zlepljena
+            if ((avgr < 31) && !step2done && trk && step1done) {
+                trk = false;
+                lastrs = [0];
+                $("#zlepek").fadeIn(1000, "swing");
+            }
+
+            // narazen
+            if ((avgr > 60) && !step1done && trk) {
+                step1done = true;
+                lastrs = [32];
+            }            
+        }, 100);
+
+        
+    </script>
+</body>
+
+</html>

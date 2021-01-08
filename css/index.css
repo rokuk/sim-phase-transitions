@@ -1,0 +1,141 @@
+.headwrapper {
+    max-width: 80%;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+}
+
+.head{
+    width: 100%;
+    background-color: #2052BB;
+}
+
+.header {
+    font-family: 'Inter', sans-serif;
+    font-size: 2.8em;
+    padding: 0.8em 0 0.5em 0;
+}
+
+h1 {
+    font-weight: 800;
+    color: #fafafa;
+}
+
+.header a {
+    text-decoration: none;
+}
+
+html, body{
+    height:100%;
+}
+
+.inspan {
+    display: inline-flex;
+    vertical-align: bottom;
+}
+
+.rspace {
+    padding-right: 5px;
+}
+
+.linknav a{
+    display: inline-flex;
+    vertical-align: bottom;
+    text-decoration: none;
+    color: #252525;
+    float: right;
+}
+
+.namig {
+    color: #777777;
+}
+
+.contentwrapper {
+    width: 100%;
+    background-color: #fafafa;
+}
+
+.content {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    color: #252525;
+    max-width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+    padding-top: 20px;
+    padding-bottom: 50px;
+}
+
+.maintext {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.footer {
+    color: #aaaaaa;
+    max-width: 80%;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: auto;
+}
+
+.footerwrapper {
+    background-color: #eee;
+    width: 100%;
+}
+
+.bounce {
+	-moz-animation: bounce 3s infinite;
+	-webkit-animation: bounce 3s infinite;
+	animation: bounce 3s infinite;
+}
+@-moz-keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -moz-transform: translateX(0);
+    transform: translateX(0);
+  }
+  40% {
+    -moz-transform: translateX(30px);
+    transform: translateX(30px);
+  }
+  60% {
+    -moz-transform: translateX(15px);
+    transform: translateX(15px);
+  }
+}
+@-webkit-keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+  40% {
+    -webkit-transform: translateX(30px);
+    transform: translateX(30px);
+  }
+  60% {
+    -webkit-transform: translateX(15px);
+    transform: translateX(15px);
+  }
+}
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -moz-transform: translateX(0);
+    -ms-transform: translateX(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+  40% {
+    -moz-transform: translateX(30px);
+    -ms-transform: translateX(30px);
+    -webkit-transform: translateX(30px);
+    transform: translateX(30px);
+  }
+  60% {
+    -moz-transform: translateX(15px);
+    -ms-transform: translateX(15px);
+    -webkit-transform: translateX(15px);
+    transform: translateX(15px);
+  }
+}

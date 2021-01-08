@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" content="Interaktivna razlaga faznih prehodov.">
+    <title>Trdno, tekoče, plinasto</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https.//cdn.jsdelivr.net">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+</head>
+
+<body>
+    <div class="h-100 d-flex flex-column">
+        <div class="head">
+            <div class="headwrapper">
+                <div class="header">
+                    <a href="/sim/phase-transitions/">
+                        <h1>Trdno, tekoče, plinasto</h1>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="contentwrapper flex-grow-1 overflow-auto">
+            <div class="container content">
+                <div class="row linknav" style="padding-bottom: 20px;">
+                    <a href="../ideal-gas/"><span class="material-icons"
+                            style="padding-right: 10px;">keyboard_backspace</span>Nazaj</a>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="row">
+                            <canvas id="myCanvas" style="padding: 0;"></canvas>
+                        </div>
+                        <div class="row" style="padding: 25px;">
+                            <button type="button" class="btn btn-danger" onclick="resetWorld();">Ponastavi</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-7 maintext px-sm-5">
+                        <p>Na začetku so atomi naključno razporejeni. Zaradi privlaka pa se kot prej začnejo zbirati v gruče.</p>
+                        <p>S spodnjima gumboma lahko povečaš ali zmanjšaš povprečno hitrost atomov (temperaturo). 
+                            Gumb je potrebno kar nekajkrat klikniti, da je učinek opazen. 
+                            Atomom lahko povečaš hitrost (segreješ snov) tudi s tem, da jih premikaš naokoli.</p>
+                        <p><button type="button" class="btn btn-primary" onclick="zmanjsaj()">Ohladi</button>
+                            <button type="button" class="btn btn-primary" onclick="povecaj()">Segrej</button>
+                        </p>
+                        <p><div class="inspan">
+                            <span class="material-icons rspace">play_arrow</span>
+                            Če atomom dovolj povečaš hitrost (temperaturo), se gibljejo kot pri idealnem plinu in po celotnem prostoru.
+                            Če pa jim hitrost dovolj zmanjšaš, se zberejo v gruče. (poskusi!)
+                        </div>
+                        </p>
+                        <p>Ali se snov obnaša kot plin, tekočina ali trdnina je torej odvisno od njene temperature.
+                            Če to prevedemo v jezik atomov: Stanje snovi je odvisno od povprečne hitrosti atomov, ki jo sestavljajo!
+                        </p>
+                        <p>Pri naši simulaciji je očitno vidna razlika med plinastim stanjem (ko se atomi hitro gibljejo po celotnem prostoru) 
+                            in med trdnim stanjem (ko atomi skorjam mirujejo v gručah). Tekoče stanje je med njima in ga je težko opaziti.
+                            Če se zelo potrudiš ga lahko opaziš, če izhajaš iz trdnega stanja in počasi povečuješ temperaturo.
+                            Za tekoče stanje je značilno, da so atomi še vedno blizu en drugega a je razdalja med njimi malo večja kot v trdnem,
+                            obenem pa ni gruč oz. vidne strukture. 
+                        </p>
+                        <p>Da povzamemo: snov je sestavljena iz velikega števila majhnih atomov, ki se neprestano gibljejo, trkajo in se med sabo privlačijo. 
+                            Zaradi privlaka so snovi pri nizki temperaturi trdne, pri nekoliko višji tekoče, pri še višji pa plinaste.
+                            Temperatura pa je drugo ime za povprečno hitrost atomov.
+                            Tako smo dobili nekaj odgovorov na vprašanje, zakaj so snovi plini, tekočine in trdnine!
+                        </p>
+                        <div class="linknav" id="nadaljuj">
+                            <hr>
+                            <a href="../end/"><b>Zaključek</b><span class="material-icons"
+                                    style="padding-left: 10px;">keyboard_tab</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footerwrapper">
+            <div class="footer">
+                Rok Kuk, 2021, GNU GPLv3
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matter-js@0.15.0/build/matter.min.js"
+        integrity="sha256-SvLWUhd2XsoN8B51fSSgZCO6J0X4uG+FGQZ41TStzMU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matter-attractors@0.1.6/build/matter-attractors.min.js"
+        integrity="sha256-XVi6kQJNjdbjQyRNAIuyfR2VB/jViITCG2pt5HvW2NQ=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/seedrandom@3.0.5/seedrandom.min.js"
+        integrity="sha256-0usXoFraKr8ZyLyx8PGuYrttpdWaadxkFM7QhwSojNE=" crossorigin="anonymous"></script>
+    <script>
+        Matter.use('matter-attractors'); // mora biti za matte.js, matter-attractors.js in pred main.js
+    </script>
+    <script src="../js/main.js"></script>
+    <!-- Simulation implementation -->
+    <script>
+        let bb = document.getElementById('myCanvas').getBoundingClientRect();
+        let width = bb.right - bb.left;
+        let height = width;
+        let instance = createSim("myCanvas", width, height);
+
+        let radij = 5;
+        let sigma2 = Math.pow(radij * 1, 2);
+        let scale = 0.02;
+        let N = 200;
+        let pad = 0.05;
+        let genwidth = 0.9 * width;
+        let genheight = 0.9 * height;
+
+        function setup() {
+            Math.seedrandom('lenjon-2');
+
+            let circles = [];
+
+            for (let i=0; i < N; i++) {
+                let x, y;
+
+                // prevent generating collided circles
+                do {
+                    x = gen(genwidth, pad);
+                    y = gen(genheight, pad);
+                } while (collides(x, y, radij, circles));
+            
+                let options = {
+                    inertia: Infinity,
+                    friction: 0,
+                    frictionAir: 0,
+                    frictionStatic: 0,
+                    restitution: 1,
+                    render: {
+                        fillStyle: "#ffcc66"
+                    }
+                };
+                options.plugin = {};
+                options.plugin.attractors = [
+                    function (bodyA, bodyB) {
+                        let dx = bodyA.position.x - bodyB.position.x;
+                        let dy = bodyA.position.y - bodyB.position.y;
+                        let dist2 = Math.pow(dx, 2) + Math.pow(dy, 2);
+                        let term = sigma2 / dist2;
+                        let velikostd2 = Math.pow(term, 3) / dist2 * (1 - 2 * Math.pow(term, 3));
+                        let force = {
+                            x: velikostd2 * dx * scale,
+                            y: velikostd2 * dy * scale
+                        };
+                        Body.applyForce(bodyA, bodyA.position, Vector.neg(force));
+                        Body.applyForce(bodyB, bodyB.position, force);
+                    }
+                ];
+                let circ = Bodies.circle(x, y, radij, options, 50);
+                circles.push(circ);
+            }
+
+            World.add(instance.world, circles);
+        }
+
+        function resetWorld() {
+            World.clear(instance.world, true);
+            setup();
+        }
+
+        function zmanjsaj() {
+            let ken = kineticnaEnergija(instance.world);
+            if (ken > 0.01) {
+                changeTemperature(instance.world, 0.95);
+            }
+        }
+
+        function povecaj() {
+            let ken = kineticnaEnergija(instance.world);
+            if (ken < 100) {
+                changeTemperature(instance.world, 1.1);
+            }
+        }
+
+        setup();
+
+        Render.run(instance.render);
+        let runner = Runner.create();
+        Runner.run(runner, instance.engine);
+
+        let targetken;
+        let intervals = setInterval(function() {
+            let ken = kineticnaEnergija(instance.world);
+            if (ken > targetken) {
+                targetken = ken;
+            } else if (ken < 150) {
+                changeTemperature(instance.world, 1.004);
+            }
+            if (ken > 200) {
+                changeTemperature(instance.world, 0.5);
+            }
+        }, 100);
+    </script>
+</body>
+
+</html>
