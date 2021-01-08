@@ -1,3 +1,3 @@
 # Simulacije faznih prehodov
 
-Repozitorij kode za http://rokuk.org/sim/phase-transitions/
+Repozitorij kode za https://rokuk.org/sim/phase-transitions/
